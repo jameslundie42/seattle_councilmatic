@@ -1,0 +1,14 @@
+{
+  "sqltools.connections": [
+    {
+      "ssh": "Disabled",
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 32006,
+      "driver": "PostgreSQL",
+      "name": "CouncilmaticSeattle",
+      "database": "postgres",
+      "username": "postgres"
+    }
+  ]
+}
