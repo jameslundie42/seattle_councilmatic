@@ -1,8 +1,18 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Home{% endblock %}
 
 {% block content %}
+<!-- Banner Section -->
+<div class="row">
+    <div class="col-12">
+        <div class="home-banner">
+            <img src="{% static 'images/SeattleSkyline.jpeg' %}" alt="Seattle City Council Banner" class="img-fluid w-100">
+        </div>
+    </div>
+</div>
+
 <div class="row">
     <div class="col-10 offset-1">
         <div class="p-5 my-4 bg-secondary-subtle rounded-3">

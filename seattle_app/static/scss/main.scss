@@ -36,6 +36,24 @@ body {
   line-height: 1.6;
 }
 
+// Home page banner
+.home-banner {
+  display: block;
+  text-decoration: none;
+  overflow: hidden;
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover img {
+    transform: scale(1.02);
+  }
+}
+
 .navbar-brand {
   font-weight: 600;
   
