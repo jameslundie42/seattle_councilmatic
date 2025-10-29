@@ -57,27 +57,42 @@ class SeattleEventScraper(Scraper):
     def scrape(self):
         """
         Main scraping method - required by Pupa.
-        
+
         This method is a Python generator (uses 'yield' instead of 'return').
         Generators are memory-efficient - they produce items one at a time
         instead of loading everything into memory at once.
-        
+
         Yields:
             Event objects that Pupa will validate and save
         """
-        
+
         # Step 1: Get all events from Legistar
-        # We'll implement this method next
         events = self._fetch_events()
-        
+
+        # Track seen events to avoid duplicates
+        # Use a set of (name, date) tuples for fast lookup
+        seen_events = set()
+
         # Step 2: Process each event
-        # Python's for loop is simple and readable
         for api_event in events:
+            # Create a unique key for deduplication
+            event_key = (
+                api_event.get('EventBodyName', 'Meeting'),
+                api_event['EventDate']
+            )
+
+            # Skip if we've already seen this event
+            if event_key in seen_events:
+                logger.debug(f"Skipping duplicate event: {event_key}")
+                continue
+
+            # Mark as seen
+            seen_events.add(event_key)
+
             # Convert Legistar API event to Pupa Event model
             event = self._parse_event(api_event)
-            
+
             # Only yield if we successfully created an event
-            # 'if event:' is Python's way of checking "if not None and not empty"
             if event:
                 yield event
     
@@ -160,7 +175,7 @@ class SeattleEventScraper(Scraper):
             event_name = api_event.get('EventBodyName', 'Meeting')
             event_date_str = api_event['EventDate']
             location = api_event.get('EventLocation', 'Location TBD')
-            
+
             # Parse the date string into a Python datetime object
             # strptime = "string parse time"
             # The format string tells Python how to interpret the date string
@@ -168,31 +183,29 @@ class SeattleEventScraper(Scraper):
                 event_date_str,
                 "%Y-%m-%dT%H:%M:%S"  # Format from Legistar
             )
-            
+
             # Localize to Seattle timezone
             # Without this, the datetime is "naive" (no timezone info)
             event_date = self.TIMEZONE.localize(event_date)
-            
+
             # Create Pupa Event object
             # This is the core Open Civic Data model
             event = Event(
                 name=event_name,
                 start_date=event_date,
-                timezone=self.TIMEZONE.zone,  # String like "America/Los_Angeles"
                 location_name=location,
             )
+
+            # Store the Legistar event ID in extras for tracking
+            event.extras['legistar_event_id'] = event_id
             
             # Add source URL for transparency/debugging
             # Legistar provides a web page for each event
             if api_event.get('EventInSiteURL'):
                 event.add_source(api_event['EventInSiteURL'])
-            
-            # Add unique identifier from Legistar
-            # This helps Pupa track which events have already been imported
-            event.add_identifier(
-                identifier=str(event_id),
-                scheme="legistar_event_id"
-            )
+
+            # Note: Event objects don't have add_identifier() method
+            # Pupa uses the source URL and event details for deduplication instead
             
             # TODO: Add agenda items (we'll implement this next)
             # self._add_agenda_items(event, event_id)

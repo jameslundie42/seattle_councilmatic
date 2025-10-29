@@ -12,3 +12,6 @@ static/**
 __pycache__
 downloads
 webpack-stats.json
+
+# Data
+_data/seattle/*.json
