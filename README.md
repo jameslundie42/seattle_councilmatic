@@ -329,9 +329,9 @@ docker compose run --rm app pupa dbinit us
 
 ## 📚 Key Documentation Links
 
-- [Councilmatic Documentation](https://www.councilmatic.org/)
-- [Pupa Documentation](https://opencivicdata.readthedocs.io/)
-- [Open Civic Data](https://docs.opencivicdata.org/)
+- [Councilmatic Website](https://www.councilmatic.org/)
+- [Open Civic Data & Pupa Documentation](https://open-civic-data.readthedocs.io/en/latest/)
+- [Open Civic Data Github](https://github.com/opencivicdata)
 - [Django Documentation](https://docs.djangoproject.com/)
 
 ---
