@@ -36,6 +36,22 @@ body {
   line-height: 1.6;
 }
 
+// Home page banner
+.home-banner {
+  display: block;
+  text-decoration: none;
+  overflow: hidden;
+  max-height: 600px;  // Add this to limit height
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: cover;  // Add this to crop nicely
+    transition: transform 0.3s ease;
+  }
+}
+
 .navbar-brand {
   font-weight: 600;
   
