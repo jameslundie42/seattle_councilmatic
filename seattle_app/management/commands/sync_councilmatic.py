@@ -18,13 +18,16 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         model = options['model']
-        
+
         if model in ['people', 'all']:
             self.sync_people()
-        
+
+        if model in ['events', 'all']:
+            self.sync_events()
+
         if model in ['organizations', 'all']:
             self.stdout.write('Organization sync not yet implemented')
-        
+
         self.stdout.write(self.style.SUCCESS('\n✓ Sync complete!'))
 
     def sync_people(self):
@@ -53,4 +56,32 @@ class Command(BaseCommand):
         
         self.stdout.write(self.style.SUCCESS(
             f'  ✓ People: {created} created, {total} total'
+        ))
+
+    def sync_events(self):
+        self.stdout.write('\nSyncing events...')
+
+        # Use raw SQL for reliability
+        with connection.cursor() as cursor:
+            # Insert with conflict handling
+            # Make slug unique by appending start date
+            cursor.execute("""
+                INSERT INTO councilmatic_core_event (event_id, slug)
+                SELECT
+                    id as event_id,
+                    lower(regexp_replace(name, '[^a-zA-Z0-9]+', '-', 'g'))
+                        || '-' || to_char(start_date::timestamp, 'YYYY-MM-DD-HH24-MI-SS') as slug
+                FROM opencivicdata_event
+                WHERE id NOT IN (SELECT event_id FROM councilmatic_core_event)
+                ON CONFLICT (event_id) DO NOTHING
+            """)
+
+            created = cursor.rowcount
+
+            # Get total count
+            cursor.execute("SELECT COUNT(*) FROM councilmatic_core_event")
+            total = cursor.fetchone()[0]
+
+        self.stdout.write(self.style.SUCCESS(
+            f'  ✓ Events: {created} created, {total} total'
         ))

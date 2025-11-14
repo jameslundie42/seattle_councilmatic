@@ -1,7 +1,7 @@
 from pupa.scrape import Jurisdiction, Organization
 from .people import SeattlePersonScraper
+from .events import SeattleEventScraper
 # TODO: Implement these scrapers
-# from .events import SeattleEventScraper
 # from .bills import SeattleBillScraper
 # from .vote_events import SeattleVoteEventScraper
 
@@ -13,8 +13,8 @@ class Seattle(Jurisdiction):
 
     scrapers = {
         "people": SeattlePersonScraper,
+        "events": SeattleEventScraper,
         # TODO: Add these back when implemented
-        # "events": SeattleEventScraper,
         # "bills": SeattleBillScraper,
         # "vote_events": SeattleVoteEventScraper,
     }
